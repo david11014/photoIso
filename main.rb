@@ -1,7 +1,7 @@
 ﻿# encoding: utf-8
 require './photoIso.rb'
 
-instance = KeKeri.new
+instance = PhotoIso.new
 
 # Thread.new {
 #   while true
@@ -36,9 +36,7 @@ while true
 	when "get"
 		p instance.getUnreadPlurk
 	when "a"
-		resp = []
-		resp << "test"
-		instance.addPlurk(resp * " ",{ qualifier: 'says' })
+		
 	when "close"
 		exit
 	end
