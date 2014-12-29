@@ -1,8 +1,8 @@
 ﻿# encoding: utf-8
 require './photoIso.rb'
 
-instance = PhotoIso.new
-
+instance = PhotoIso.new "PhotoIso main block"
+cmd = PhotoIso.new "command line block"
 # Thread.new {
 #   while true
 #     begin
@@ -32,11 +32,12 @@ end
 while true
 	case gets.chomp
 	when "check"
-		p instance.checkUnreadPlurk
+		p cmd.checkUnreadPlurk
 	when "get"
-		p instance.getUnreadPlurk
+		p cmd.getUnreadPlurk
 	when "a"
-		
+		#ic = Iconv.new("utf-8","big5")
+		p cmd.addPlurk(gets.to_s,{ qualifier: ':' })
 	when "close"
 		exit
 	end

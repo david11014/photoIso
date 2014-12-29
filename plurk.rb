@@ -30,9 +30,9 @@ class Plurk
 	# input: verification code	
 	def authorize(key, secret=nil)
 		@access_token = case secret
-										when nil then @request_token.get_access_token :oauth_verifier=>key
-										else OAuth::AccessToken.new(@consumer, key, secret)
-										end
+		when nil then @request_token.get_access_token :oauth_verifier=>key
+		else OAuth::AccessToken.new(@consumer, key, secret)
+		end
 		return @access_token
 	end
 
@@ -50,7 +50,7 @@ class Plurk
 	def picupload filename
 		# Determine image type
 		type = case File.read(filename, 10)
-					 when /^GIF8/n then 'image/gif'
+					when /^GIF8/n then 'image/gif'
 					 when /^\x89PNG/n then 'image/png'
 					 when /^\xff\xd8\xff\xe0\x00\x10JFIF/n then 'image/jpeg'
 					 when /^\xff\xd8\xff\xe1(.*){2}Exif/n then 'image/jpeg'
