@@ -3,16 +3,19 @@ require './plurk.rb'
 require './setting.rb'
 require 'time'
 require 'net/http'
+require 'open-uri'
 
 class PhotoIso
 	REGEXP_CHANNEL = /^CometChannel\.scriptCallback\((.*)\);/
 	attr_reader :setting
-
+	
 	def initialize(m)
 		puts m + " loaded..."
 		@setting = Setting.new
 		@plurkApi = Plurk.new(@setting.api_key, @setting.api_secret)
 		@plurkApi.authorize(@setting.token_key, @setting.token_secret)
+		@me = @plurkApi.post '/APP/Users/me'
+		puts "My id is #{@me["id"]}"
 	end
 
 	def listenChannel
@@ -88,6 +91,7 @@ class PhotoIso
 		options = { qualifier: ':', lang: 'tr_ch' }.merge options
 		begin
 			res = @plurkApi.post '/APP/Responses/responseAdd', options.merge(plurk_id: plurk_id, content: content)
+			puts %(#{Time.now.to_s} [EVENT] Responsing plurk: #{content})
 		rescue
 			puts %(#{Time.now.to_s} [ERROR] Responsing plurk has error: #{$!.to_s})
 		end
@@ -107,6 +111,7 @@ class PhotoIso
 	def getUnreadPlurk
 		begin 
 			json = @plurkApi.post '/APP/Timeline/getUnreadPlurks'
+			
 		rescue
 			puts %(#{Time.now.to_s} [ERROR] Getting unread plurks has error: #{$!.to_s})
 			sleep 5
@@ -125,7 +130,7 @@ class PhotoIso
 			retry
 		end
 		json["responses"].each do |res|
-			return false if res["user_id"] == 10428113 #<--- 10428113 robot id
+			return false if res["user_id"] == @me["id"] #<--- 10428113 robot id
 		end
 		true
 	end
@@ -133,13 +138,30 @@ class PhotoIso
 	def responseNewPlurk(plurk)
 		return unless responsed? plurk["plurk_id"]
 		resp = []
-		case plurk["owner_id"]
-		when 10428113 # bot id
+		
+		case plurk["content"]
+		when /http[s]*:\/\/[\S]*.((jpg)|(jpeg)|(gif)|(png))/
+			imageUrl = $&.to_s
 			
-		when 5845208 # andy810625
+			#https SSL連線處理
+			if imageUrl =~ /https:\/\/[\S]*/
+				imageUrl = imageUrl.sub("https","http")
+			end
 			
-		else # others
+			puts %(#{Time.now.to_s} [EVENT] New image: #{imageUrl} form #{plurk["plurk_id"].to_s})
 			
+			begin
+				open('image.jpg', 'wb') do |file|
+					file << open(imageUrl).read
+				end
+				puts %(#{Time.now.to_s} [EVENT] Load image: #{imageUrl})
+				
+			rescue
+				puts %(#{Time.now.to_s} [ERROR] Load image #{imageUrl} has error: #{$!.to_s})
+				return
+			end
+			
+			resp << "test"
 		end
 		return if resp.empty?
 		responsePlurk(plurk["plurk_id"], resp * " ")
