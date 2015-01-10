@@ -1,8 +1,9 @@
 ﻿# encoding: utf-8
 require './photoIso.rb'
+require './log.rb'
 
 instance = PhotoIso.new "PhotoIso main block"
-cmd = PhotoIso.new "command line block"
+
 # Thread.new {
 #   while true
 #     begin
@@ -16,8 +17,10 @@ cmd = PhotoIso.new "command line block"
 # }
 Thread.new {
 	begin
+		log %(#{Time.now.to_s} [EVENT] Start listen channel)
 		instance.listenChannel while true
 	rescue
+		log %(#{Time.now.to_s} [ERROR] listen channel has some error: #{$!.to_s} \nretry it...)
 		retry
 	end
 }
@@ -26,19 +29,20 @@ Thread.new {
 begin
 	instance.checkUnreadPlurk
 rescue
-	puts %(#{Time.now.to_s} [ERROR] Checking unread plurk has error: #{$!.to_s})
+	log %(#{Time.now.to_s} [ERROR] Checking unread plurk has error: #{$!.to_s})
 end
 
 while true
 	case gets.chomp
 	when "check"
-		p cmd.checkUnreadPlurk
+		p instance.checkUnreadPlurk
 	when "get"
-		p cmd.getUnreadPlurk
+		p instance.getUnreadPlurk
 	when "a"
 		#ic = Iconv.new("utf-8","big5")
-		p cmd.addPlurk(gets.to_s,{ qualifier: ':' })
+		p instance.addPlurk(gets.to_s,{ qualifier: ':' })
 	when "close"
+		log %(#{Time.now.to_s} [EVENT] Close robot)
 		exit
 	end
 end

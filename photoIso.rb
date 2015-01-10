@@ -1,6 +1,7 @@
 # encoding: utf-8
 require './plurk.rb'
 require './setting.rb'
+require './log.rb'
 require 'time'
 require 'net/http'
 require 'open-uri'
@@ -17,8 +18,10 @@ class PhotoIso
 		@me = @plurkApi.post '/APP/Users/me'
 		puts "My id is #{@me["id"]}"
 	end
-
+	public
+	
 	def listenChannel
+			
 		getChannel while @channelUri.nil?
 		getChannel if @channelOffset == -3
 		params = { :channel => @channelName, :offset => @channelOffset }
@@ -60,12 +63,13 @@ class PhotoIso
 		options = { qualifier: ':', lang: 'tr_ch' }.merge options
 		begin
 			json = @plurkApi.post '/APP/Timeline/plurkAdd', options.merge(content: content)
+			log %(#{Time.now.to_s} [EVENT] add Plurk: #{content})
 		rescue
 			str = %(#{Time.now.to_s} [ERROR] Adding plurk has error: #{$!.to_s})
 			if json
 				str << "(#{json["error_text"]})" if json.key? "error_text"
 			end
-			puts str
+			log str
 			sleep 120
 			retry
 		end
@@ -76,12 +80,13 @@ class PhotoIso
 		options = { qualifier: ':', lang: 'tr_ch' }.merge options
 		begin
 			json = @plurkApi.post '/APP/Timeline/plurkAdd', options.merge(content: content, limited_to: [[user_id]])
+			log %(#{Time.now.to_s} [EVENT] add PrivatePlurk: #{content})
 		rescue
 			str = %(#{Time.now.to_s} [ERROR] Adding private plurk has error: #{$!.to_s})
 			if json
 				str << "(#{json["error_text"]})" if json.key? "error_text"
 			end
-			puts str
+			log str
 			sleep 120
 			retry
 		end
@@ -91,9 +96,9 @@ class PhotoIso
 		options = { qualifier: ':', lang: 'tr_ch' }.merge options
 		begin
 			res = @plurkApi.post '/APP/Responses/responseAdd', options.merge(plurk_id: plurk_id, content: content)
-			puts %(#{Time.now.to_s} [EVENT] Responsing plurk: #{content})
+			log %(#{Time.now.to_s} [EVENT] Responsing plurk: #{content})
 		rescue
-			puts %(#{Time.now.to_s} [ERROR] Responsing plurk has error: #{$!.to_s})
+			log %(#{Time.now.to_s} [ERROR] Responsing plurk has error: #{$!.to_s})
 		end
 	end
 
@@ -111,9 +116,9 @@ class PhotoIso
 	def getUnreadPlurk
 		begin 
 			json = @plurkApi.post '/APP/Timeline/getUnreadPlurks'
-			
+			log %(#{Time.now.to_s} [EVENT] get UnreadPlurk: #{json})
 		rescue
-			puts %(#{Time.now.to_s} [ERROR] Getting unread plurks has error: #{$!.to_s})
+			log %(#{Time.now.to_s} [ERROR] Getting unread plurks has error: #{$!.to_s})
 			sleep 5
 			retry
 		end
@@ -125,12 +130,12 @@ class PhotoIso
 		begin
 			json = @plurkApi.post '/APP/Responses/get', plurk_id: plurk_id
 		rescue
-			puts %(#{Time.now.to_s} [ERROR] Getting response has error: #{$!.to_s})
+			log %(#{Time.now.to_s} [ERROR] Getting response has error: #{$!.to_s})
 			sleep 5
 			retry
 		end
 		json["responses"].each do |res|
-			return false if res["user_id"] == @me["id"] #<--- 10428113 robot id
+			return false if res["user_id"] == @me["id"] 
 		end
 		true
 	end
@@ -140,7 +145,7 @@ class PhotoIso
 		resp = []
 		
 		case plurk["content"]
-		when /http[s]*:\/\/[\S]*.((jpg)|(jpeg)|(gif)|(png))/
+		when /http[s]*:\/\/[\S]*.((jpg)|(jpeg))/
 			imageUrl = $&.to_s
 			
 			#https SSL連線處理
@@ -148,16 +153,16 @@ class PhotoIso
 				imageUrl = imageUrl.sub("https","http")
 			end
 			
-			puts %(#{Time.now.to_s} [EVENT] New image: #{imageUrl} form #{plurk["plurk_id"].to_s})
+			log %(#{Time.now.to_s} [EVENT] New image: #{imageUrl} form #{plurk["plurk_id"].to_s})
 			
 			begin
 				open('image.jpg', 'wb') do |file|
 					file << open(imageUrl).read
 				end
-				puts %(#{Time.now.to_s} [EVENT] Load image: #{imageUrl})
+				log %(#{Time.now.to_s} [EVENT] Load image: #{imageUrl})
 				
 			rescue
-				puts %(#{Time.now.to_s} [ERROR] Load image #{imageUrl} has error: #{$!.to_s})
+				log %(#{Time.now.to_s} [ERROR] Load image #{imageUrl} has error: #{$!.to_s})
 				return
 			end
 			
@@ -176,14 +181,15 @@ class PhotoIso
 			retry
 		end
 		if resp["comet_server"].nil?
-			puts 'Failed to get channel.'
+			log %(#{Time.now.to_s} [ERROR] Failed to get channel.)
 			return false
 		end
 		@channelUri = resp["comet_server"]
 		@channelName = resp["channel_name"]
 		@channelOffset = -1
-		puts 'Get channel uri: ' + @channelUri
-		puts 'Get channel name: ' + @channelName
+		
+		log %(#{Time.now.to_s} [EVENT] Get channel uri: #{@channelUri})
+		log %(#{Time.now.to_s} [EVENT] Get channel name: #{@channelName})
 		return true
 	end
 end
