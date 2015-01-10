@@ -5,6 +5,7 @@ require './log.rb'
 require 'time'
 require 'net/http'
 require 'open-uri'
+require 'exifr'
 
 class PhotoIso
 	REGEXP_CHANNEL = /^CometChannel\.scriptCallback\((.*)\);/

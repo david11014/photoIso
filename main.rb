@@ -1,5 +1,6 @@
 ﻿# encoding: utf-8
 require './photoIso.rb'
+require './server.rb'
 require './log.rb'
 
 instance = PhotoIso.new "PhotoIso main block"
@@ -15,6 +16,17 @@ instance = PhotoIso.new "PhotoIso main block"
 #     end
 #   end
 # }
+Thread.new {
+	begin
+		log %(#{Time.now.to_s} [EVENT] Start server)
+		s = Server.run!
+	rescue
+		log %(#{Time.now.to_s} [ERROR] Start server some error: #{$!.to_s} \nretry it...)
+		sleep 10
+		retry
+	end
+}
+
 Thread.new {
 	begin
 		log %(#{Time.now.to_s} [EVENT] Start listen channel)
