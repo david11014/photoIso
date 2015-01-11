@@ -1,5 +1,14 @@
-class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret)
-	VERSION = 1.2
+class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret ,
+:size,
+:model,
+:time,
+:exposure_time,
+:white_balance,
+:f_number,
+:ISO,
+:GPS,
+:focal_length)
+	VERSION = 2.0
 	OLD_KEYS = %W(APIKEY APISECRET TOKENKEY TOKENSECRET)
 	attr_reader :filename
 
@@ -29,7 +38,43 @@ class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret)
 		print "Token secret key [#{self.token_secret}]: "
 		value = gets.chomp
 		self.token_secret = value unless value.empty?
-
+		
+		print "Want to show picture's size?(y/n)[#{self.size}]: "
+		value = gets.chomp
+		self.size = tr(value) 
+	
+		print "Want to show picture's model?(y/n)[#{self.model}]: "
+		value = gets.chomp
+		self.model = tr(value)
+		
+		print "Want to show picture's time and date?(y/n)[#{self.time}]: "
+		value = gets.chomp
+		self.time = tr(value)
+		
+		print "Want to show picture's exposure time?(y/n)[#{self.exposure_time}]: "
+		value = gets.chomp
+		self.exposure_time = tr(value)
+		
+		print "Want to show picture's white balance?(y/n)[#{self.white_balance}]: "
+		value = gets.chomp
+		self.white_balance = tr(value)
+		
+		print "Want to show picture's f number?(y/n)[#{self.f_number}]: "
+		value = gets.chomp
+		self.f_number = tr(value)
+		
+		print "Want to show picture's focal length?(y/n)[#{self.focal_length}]: "
+		value = gets.chomp
+		self.focal_length = tr(value)
+		
+		print "Want to show picture's ISO?(y/n)[#{self.ISO}]: "
+		value = gets.chomp
+		self.ISO = tr(value)
+		
+		print "Want to show picture's GPS data?(y/n)[#{self.GPS}]: "
+		value = gets.chomp
+		self.GPS = tr(value)
+		
 		self.write!
 		puts self.to_s
 	end
@@ -65,12 +110,28 @@ class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret)
 		end
 		true
 	end
-
+	
+	def set(key,value)
+		if self[key].nil? or self[key].empty?
+			self[key] = value 
+		else
+			puts %(The setting doesn't have this key #{key})
+		end
+	end
+	
 	def to_s
 		result = "{\n"
 		self.members.each do |key|
 			result << %(\t#{key} => #{self[key]}\n)
 		end
 		result << "}"
+	end
+	
+	def tr(t)
+		if t =~ /[nN][oO]?/
+			return false
+		else
+			return true
+		end
 	end
 end

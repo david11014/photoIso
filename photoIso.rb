@@ -1,4 +1,4 @@
-# encoding: utf-8
+﻿# encoding: utf-8
 require './plurk.rb'
 require './setting.rb'
 require './log.rb'
@@ -148,26 +148,26 @@ class PhotoIso
 		case plurk["content"]
 		when /http[s]*:\/\/[\S]*.((jpg)|(jpeg))/
 			imageUrl = $&.to_s
-			
-			#https SSL�s�u�B�z
-			if imageUrl =~ /https:\/\/[\S]*/
-				imageUrl = imageUrl.sub("https","http")
-			end
-			
+		
 			log %(#{Time.now.to_s} [EVENT] New image: #{imageUrl} form #{plurk["plurk_id"].to_s})
 			
+			#load the image file
 			begin
 				open('image.jpg', 'wb') do |file|
-					file << open(imageUrl).read
+					if imageUrl =~ /https:\/\/[\S]*/
+						file << open(imageUrl,{ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
+					else
+						file << open(imageUrl,).read
+					end
 				end
 				log %(#{Time.now.to_s} [EVENT] Load image: #{imageUrl})
-				
 			rescue
 				log %(#{Time.now.to_s} [ERROR] Load image #{imageUrl} has error: #{$!.to_s})
 				return
 			end
 			
-			resp << "test"
+			#read the EXIF info and put int the response string
+			resp << readEXIF
 		end
 		return if resp.empty?
 		responsePlurk(plurk["plurk_id"], resp * " ")
@@ -192,5 +192,59 @@ class PhotoIso
 		log %(#{Time.now.to_s} [EVENT] Get channel uri: #{@channelUri})
 		log %(#{Time.now.to_s} [EVENT] Get channel name: #{@channelName})
 		return true
+	end
+	
+	def readEXIF
+		begin 
+			@setting.read
+			s = ""
+			a = EXIFR::JPEG.new('./image.jpg')
+			if a.exif?
+				if @setting.time == "true"
+					s += "拍攝日期：#{a.date_time.to_s}\n" unless a.date_time.nil?
+				end
+				if @setting.GPS == "true"
+					s += "拍攝地點： \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
+					s += "#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f} \n" unless a.gps_longitude.nil?
+					s += "#{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f} \n" unless a.gps_latitude.nil?
+					s += "海拔#{a.gps_altitude.to_f}公尺\n" unless a.gps_altitude.nil?
+				end
+				if @setting.exposure_time == "true"
+					s += "快門時間：#{a.exif.exposure_time.to_s}\n" unless a.exif.exposure_time.nil?
+				end
+				if @setting.size == "true"
+					s += "照片大小：#{a.width} * #{a.height}\n" unless a.width.nil? or a.height.nil?
+				end
+				if @setting.f_number == "true"
+					s += "光圈大小：F#{a.exif.f_number.to_s} \n" unless a.exif.f_number.nil?
+				end
+				if @setting.focal_length == "true"
+					s += "焦距：F#{a.exif.focal_length.to_f.to_s}mm \n" unless a.exif.f_number.nil?
+				end
+				
+				if @setting.ISO == "true"
+					s += "ISO值：#{a.exif.iso_speed_ratings.to_s}  \n" unless a.exif.iso_speed_ratings.nil?
+				end
+				if @setting.white_balance == "true"
+					s += "白平衡：#{a.exif.white_balance.to_s} \n" unless a.exif.white_balance.nil?
+				end
+				if @setting.model == "true"
+					s += "設備：" unless a.exif.make.nil? and a.exif.model.nil?
+					s += "#{a.exif.make.to_s} " unless a.exif.make.nil?
+					s += "#{a.exif.model.to_s} \n" unless a.exif.model.nil?
+				end
+			else
+				if @setting.size == "true"
+					s += "你的照片沒有EXIF資訊歐 OAO\n"
+					s += "照片大小：#{a.width} * #{a.height}\n" unless a.width.nil? or a.height.nil?
+				end
+			end	
+			
+			return s
+		rescue
+			log %(#{Time.now.to_s} [ERROR] Make response string has error: #{$!.to_s})
+			s = "喔哦 出了一些問題"
+			return s
+		end	
 	end
 end

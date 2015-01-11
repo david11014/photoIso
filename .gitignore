@@ -35,4 +35,5 @@ build/
 
 *.db
 *.old*
+log.erb
 image.jpg

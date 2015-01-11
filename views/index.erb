@@ -1,20 +1,56 @@
 ﻿<html>
-	<p style="color: blue;">It's work!!</p>
-	<!--<a href="./a.html">link</a>-->
-	<form action="./Cmd">
-		command: <input type="text" name="cmd" value=""><br>
-		<input type="submit" value="Submit">
-	</form>
-	<form action="./setting">
-		<input type="checkbox" name="width" value=true>width<br>
-		<input type="checkbox" name="height" value=true>height<br>
-		<input type="checkbox" name="model" value=true>model<br>
-		<input type="checkbox" name="time" value=true>time<br>
-		<input type="checkbox" name="exposure_time" value=true>exposure_time<br>
-		<input type="checkbox" name="f_number" value=true>f_number<br>
-		<input type="checkbox" name="ISO" value=true>ISO<br>
-		<input type="checkbox" name="GPS" value=true>GPS 
-		<input type="submit" value="Submit">
-	</form>
-	<iframe src="./log" style="width: 100%; height: 50%"></iframe>
+	<title>PhotoIso 後台管理</title>
+	<body>
+		<p>發文設定</p>
+		<form action="./setting">
+			<% if @setting["size"]%>
+				<input type="checkbox" name="size" value=true checked>圖片大小 
+			<%else%>
+				<input type="checkbox" name="size" value=true>圖片大小 
+			<%end%>
+			<% if @setting["model"]%>
+				<input type="checkbox" name="model" value=true checked>廠商型號 
+			<%else%>
+				<input type="checkbox" name="model" value=true>廠商型號 
+			<%end%>
+			<% if @setting["time"]%>
+				<input type="checkbox" name="time" value=true checked>拍攝時間</br>
+			<%else%>
+				<input type="checkbox" name="time" value=true>拍攝時間</br>
+			<%end%>
+			<% if @setting["exposure_time"]%>
+				<input type="checkbox" name="exposure_time" value=true checked>曝光時間 
+			<%else%>
+				<input type="checkbox" name="exposure_time" value=true>曝光時間 
+			<%end%>
+			<% if @setting["white_balance"]%>
+				<input type="checkbox" name="white_balance" value=true checked>白平衡 
+			<%else%>
+				<input type="checkbox" name="white_balance" value=true>白平衡 
+			<%end%>
+			<% if @setting["f_number"]%>
+				<input type="checkbox" name="f_number" value=true checked>光圈f</br>
+			<%else%>
+				<input type="checkbox" name="f_number" value=true>光圈f</br>
+			<%end%>
+			<% if @setting["focal_length"]%>
+				<input type="checkbox" name="focal_length" value=true checked>焦距 
+			<%else%>
+				<input type="checkbox" name="focal_length" value=true>焦距 
+			<%end%>
+			<% if @setting["ISO"]%>
+				<input type="checkbox" name="ISO" value=true checked>ISO 
+			<%else%>
+				<input type="checkbox" name="ISO" value=true>ISO 
+			<%end%>
+			<% if @setting["GPS"]%>
+				<input type="checkbox" name="GPS" value=true checked>GPS</br>
+			<%else%>
+				<input type="checkbox" name="GPS" value=true>GPS</br>
+			<%end%>
+		
+			<input type="submit" value="更新">
+		</form>
+		<iframe src="./log" style="width: 100%; height: 60%"></iframe>
+	</body>
 </html>
