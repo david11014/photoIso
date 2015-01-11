@@ -16,3 +16,10 @@ Command
 
 close the program</br>
  > close  
+ 
+Check unread Plurk </br>
+ > check
+ 
+Add the plurk "Please DON'T use chinese in Windows :)" </br>
+ > a
+ >(add something)
