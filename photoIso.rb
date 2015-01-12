@@ -207,6 +207,7 @@ class PhotoIso
 					s += "拍攝地點： \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
 					s += "#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f} \n" unless a.gps_longitude.nil?
 					s += "#{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f} \n" unless a.gps_latitude.nil?
+					s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f} #{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f} \n " unless a.gps_longitude.nil? and a.gps_latitude.nil?
 					s += "海拔#{a.gps_altitude.to_f}公尺\n" unless a.gps_altitude.nil?
 				end
 				if @setting.exposure_time == "true"

@@ -1,4 +1,4 @@
-# encoding: utf-8
+﻿# encoding: utf-8
 require 'sinatra'
 require 'sinatra/base'
 require './setting.rb'
@@ -7,23 +7,27 @@ require './log.rb'
  class Server < Sinatra::Base
 	attr_reader :setting
 	attr_writer :setting
-	set :port , 80
+	set :port , 8123
 	@filename = ENV["SETTING_FILE"] || "setting.db"
 
 	get '/' do
-		erb :index
+		@setting = Setting.new
+		s = "#{Time.now.to_s} [EVENT] load setting from web interface\n"
+		s += "size= #{@setting.size}\n"
+		s += "model= #{@setting.model}\n"
+		s += "time = #{@setting.time}\n"
+		s += "exposure_time = #{@setting.exposure_time}\n"
+		s += "white_balance =#{@setting.white_balance}\n"
+		s += "f_number =#{@setting.f_number}\n"
+		s += "ISO =#{@setting.ISO}\n"
+		s += "GPS =#{@setting.GPS}\n"
+		s += "focal_length =#{@setting.focal_length}\n"
+		log s
+		erb :index 
 	end
 
 	get '/log' do
 		erb :log
-	end
-
-	get '/Cmd' do
-		erb :index
-	end
-
-	after '/Cmd' do
-		log %( #{Time.now.to_s} [EVENT] Cmd #{params[:cmd]} )
 	end
 
 	get '/setting' do
