@@ -39,11 +39,11 @@ Thread.new {
 }
 
 # check unreadPlurk once on start
-begin
-	instance.checkUnreadPlurk
-rescue
-	log %(#{Time.now.to_s} [ERROR] Checking unread plurk has error: #{$!.to_s})
-end
+#begin
+#	instance.checkUnreadPlurk
+#rescue
+#	log %(#{Time.now.to_s} [ERROR] Checking unread plurk has error: #{$!.to_s})
+#end
 
 while true
 	case gets.chomp

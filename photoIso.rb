@@ -204,35 +204,35 @@ class PhotoIso
 					s += "拍攝日期：#{a.date_time.to_s}\n" unless a.date_time.nil?
 				end
 				if @setting.GPS == "true"
-					s += "拍攝地點： \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
-					s += "#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f} \n" unless a.gps_longitude.nil?
-					s += "#{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f} \n" unless a.gps_latitude.nil?
-					s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f} #{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f} \n " unless a.gps_longitude.nil? and a.gps_latitude.nil?
-					s += "海拔#{a.gps_altitude.to_f}公尺\n" unless a.gps_altitude.nil?
+					s += "拍攝地點： " unless a.gps_longitude.nil? and a.gps_latitude.nil?
+					s += "#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f.round(4)} " unless a.gps_longitude.nil?
+					s += "#{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f.round(4)} \n" unless a.gps_latitude.nil?
+					s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s}#{a.gps_longitude.to_f}+#{a.gps_latitude_ref.to_s}#{a.gps_latitude.to_f} \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
+					s += "海拔#{a.gps_altitude.to_f.round(3)}公尺\n" unless a.gps_altitude.nil?
 				end
 				if @setting.exposure_time == "true"
-					s += "快門時間：#{a.exif.exposure_time.to_s}\n" unless a.exif.exposure_time.nil?
+					s += "快門時間：#{a.exif.exposure_time.to_f.round(4)}\n" unless a.exif.exposure_time.nil?
 				end
 				if @setting.size == "true"
 					s += "照片大小：#{a.width} * #{a.height}\n" unless a.width.nil? or a.height.nil?
 				end
 				if @setting.f_number == "true"
-					s += "光圈大小：F#{a.exif.f_number.to_s} \n" unless a.exif.f_number.nil?
+					s += "光圈大小：F #{a.exif.f_number.to_s}\n" unless a.exif.f_number.nil?
 				end
 				if @setting.focal_length == "true"
-					s += "焦距：F#{a.exif.focal_length.to_f.to_s}mm \n" unless a.exif.f_number.nil?
+					s += "焦距：#{a.exif.focal_length.to_f.to_s}mm\n" unless a.exif.focal_length.nil? 
 				end
 				
 				if @setting.ISO == "true"
-					s += "ISO值：#{a.exif.iso_speed_ratings.to_s}  \n" unless a.exif.iso_speed_ratings.nil?
+					s += "ISO值：#{a.exif.iso_speed_ratings.to_s}\n" unless a.exif.iso_speed_ratings.nil?
 				end
 				if @setting.white_balance == "true"
-					s += "白平衡：#{a.exif.white_balance.to_s} \n" unless a.exif.white_balance.nil?
+					s += "白平衡：#{a.exif.white_balance.to_s}\n" unless a.exif.white_balance.nil?
 				end
 				if @setting.model == "true"
 					s += "設備：" unless a.exif.make.nil? and a.exif.model.nil?
 					s += "#{a.exif.make.to_s} " unless a.exif.make.nil?
-					s += "#{a.exif.model.to_s} \n" unless a.exif.model.nil?
+					s += "#{a.exif.model.to_s}" unless a.exif.model.nil?
 				end
 			else
 				if @setting.size == "true"
