@@ -27,6 +27,7 @@ Thread.new {
 	end
 }
 
+#listen channel
 Thread.new {
 	begin
 		log %(#{Time.now.to_s} [EVENT] Start listen channel)
