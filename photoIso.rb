@@ -146,6 +146,11 @@ class PhotoIso
 		resp = []
 		
 		case plurk["content"]
+		when /http[s]*:\/\/emos.plurk.com[\S]*.((jpg)|(jpeg))/
+			imageUrl = $&.to_s
+			log %(#{Time.now.to_s} [EVENT] New image: #{imageUrl} form #{plurk["plurk_id"].to_s})
+			log %(\tBut it is Emoticons)
+			return
 		when /http[s]*:\/\/[\S]*.((jpg)|(jpeg))/
 			imageUrl = $&.to_s
 		
