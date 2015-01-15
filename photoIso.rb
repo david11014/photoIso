@@ -216,7 +216,7 @@ class PhotoIso
 					s += "海拔#{a.gps_altitude.to_f.round(3)}公尺\n" unless a.gps_altitude.nil?
 				end
 				if @setting.exposure_time == "true"
-					s += "快門時間：#{(1 / a.exif.exposure_time.to_r.rationalize(10**-8))}\n" unless a.exif.exposure_time.nil?
+					s += "快門時間：#{( a.exif.exposure_time.to_r.rationalize(10**-8))}\n" unless a.exif.exposure_time.nil?
 				end
 				if @setting.size == "true"
 					s += "照片大小：#{a.width} * #{a.height}\n" unless a.width.nil? or a.height.nil?
