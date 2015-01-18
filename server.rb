@@ -30,7 +30,7 @@ require './log.rb'
 		erb :log
 	end
 
-	get '/setting' do
+	post '/' do
 	
 		@setting = Setting.new
 		

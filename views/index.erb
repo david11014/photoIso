@@ -1,8 +1,10 @@
 <html>
-	<title>PhotoIso 後台管理</title>
+	<head>
+		<title>PhotoIso 後台管理</title>
+	</head>
 	<body>
 		<p>發文設定</p>
-		<form action="./setting">
+		<form method = "post" action="">
 			<% if @setting["size"]%>
 				<input type="checkbox" name="size" value=true checked>圖片大小 
 			<%else%>
