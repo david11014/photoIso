@@ -1,4 +1,5 @@
 class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret ,
+:server,
 :size,
 :model,
 :time,
@@ -38,7 +39,11 @@ class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret ,
 		print "Token secret key [#{self.token_secret}]: "
 		value = gets.chomp
 		self.token_secret = value unless value.empty?
-		
+	
+		print "Want to open the server?(y/n)[#{self.server}]: "
+                value = gets.chomp
+                self.server = tr(value)
+			
 		print "Want to show picture's size?(y/n)[#{self.size}]: "
 		value = gets.chomp
 		self.size = tr(value) 
@@ -112,10 +117,11 @@ class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret ,
 	end
 	
 	def set(key,value)
-		if self[key].nil? or self[key].empty?
-			self[key] = value 
-		else
-			puts %(The setting doesn't have this key #{key})
+		begin
+			self[key] = value
+			log %(#{Time.now.to_s} [EVENT] The setting #{key} has change value = #{self[key]}) 
+		rescue
+			log %(#{Time.now.to_s} [ERROR] Set the setting value has error: #{$!.to_s})
 		end
 	end
 	

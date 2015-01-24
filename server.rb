@@ -7,7 +7,7 @@ require './log.rb'
  class Server < Sinatra::Base
 	attr_reader :setting
 	attr_writer :setting
-	set :port , 8123
+	set :port , 8888
 	@filename = ENV["SETTING_FILE"] || "setting.db"
 
 	get '/' do
