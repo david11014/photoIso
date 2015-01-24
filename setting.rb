@@ -126,6 +126,12 @@ class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret ,
 		end
 	end
 	
+	def list
+		 self.members.each do |key|
+                 	puts %(#{key} = "#{self[key]}")
+                 end
+	end
+	
 	def to_s
 		result = "{\n"
 		self.members.each do |key|

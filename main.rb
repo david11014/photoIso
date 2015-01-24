@@ -33,6 +33,12 @@ Thread.new {
 	end
 }
 
+#friend watch
+Thread.new {
+	addAllAsFriends
+	sleep 15
+}
+
 # check unreadPlurk once on start
 #begin
 #	p instance.checkUnreadPlurk
@@ -46,6 +52,7 @@ while true
 	case gets.chomp
 	when "check"
 		p instance.checkUnreadPlurk
+		p instance.addAllAsFriends
 	when "get"
 		p instance.getUnreadPlurk
 	when "a"
@@ -59,6 +66,8 @@ while true
 		setting.set(key,value)
 		setting.write!
 		setting.read
+	when "set -l"
+		setting.list
 	when "close"
 		log %(#{Time.now.to_s} [EVENT] Close robot)
 		exit

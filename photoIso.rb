@@ -56,6 +56,8 @@ class PhotoIso
 			when "new_response"
 			when "new_plurk"
 				responseNewPlurk plurk
+			when "friendship_request"
+				p "friend request"
 			end
 		end
 	end
@@ -111,8 +113,10 @@ class PhotoIso
 			responseNewPlurk plurk
 		end
 	end
-
-	private
+	
+	def addAllAsFriends
+		 json = @plurkApi.post '/APP/Alerts/addAllAsFriends'
+	end
 	
 	def getUnreadPlurk
 		begin 
@@ -126,6 +130,8 @@ class PhotoIso
 
 		return json
 	end
+
+	private
 
 	def responsed?(plurk_id)
 		begin
