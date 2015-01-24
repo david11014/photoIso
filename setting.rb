@@ -95,6 +95,7 @@ class Setting < Struct.new(:api_key, :api_secret, :token_key, :token_secret ,
 				puts "WARNING! Found old option: #{md[:key]}. You may run setting_upgrade.rb before starting ke__ri robot." if OLD_KEYS.include? md[:key]
 			end																																																																
 		end
+		puts "done"
 	end
 
 	def write!

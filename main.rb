@@ -3,20 +3,22 @@ require './photoIso.rb'
 require './server.rb'
 require './log.rb'
 require './setting.rb'
+require 'thread'
 
 instance = PhotoIso.new "PhotoIso main block"
 setting = Setting.new
 # server
-Thread.new {
-	begin
-		if setting.server == "true"
-			log %(#{Time.now.to_s} [EVENT] Start server)
-			s = Server.run!
-		end
-	rescue
-		log %(#{Time.now.to_s} [ERROR] Start server some error: #{$!.to_s} \nretry it...)
-		sleep 10
-		retry
+st = Thread.new { 
+	
+	if setting.server == "true"
+		begin
+                	log %(#{Time.now.to_s} [EVENT] Start server)
+	                s = Server.run!
+	        rescue
+       	 	        log %(#{Time.now.to_s} [ERROR] Start server some error: #{$!.to_s} \nretry it...)
+       	         	sleep 10
+	                retry
+       	 	end
 	end
 }
 
@@ -56,6 +58,7 @@ while true
 		value = gets.chomp
 		setting.set(key,value)
 		setting.write!
+		setting.read
 	when "close"
 		log %(#{Time.now.to_s} [EVENT] Close robot)
 		exit

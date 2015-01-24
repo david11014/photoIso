@@ -4,7 +4,7 @@ require 'sinatra/base'
 require './setting.rb'
 require './log.rb'
 
- class Server < Sinatra::Base
+class Server < Sinatra::Base
 	attr_reader :setting
 	attr_writer :setting
 	set :port , 8888
@@ -73,4 +73,3 @@ private
 
 	
 end
-
