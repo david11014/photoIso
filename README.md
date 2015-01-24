@@ -22,6 +22,7 @@ Check unread Plurk </br>
  
 Add the plurk "Please DON'T use chinese in Windows :)" </br>
  > a
+ 
  > (add something)
  
  Change the setting </br>
