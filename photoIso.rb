@@ -96,12 +96,17 @@ class PhotoIso
 	end
 
 	def responsePlurk(plurk_id, content, options = {})
-		options = { qualifier: ':', lang: 'tr_ch' }.merge options
-		begin
-			res = @plurkApi.post '/APP/Responses/responseAdd', options.merge(plurk_id: plurk_id, content: content)
-			log %(#{Time.now.to_s} [EVENT] Responsing plurk: #{content})
-		rescue
-			log %(#{Time.now.to_s} [ERROR] Responsing plurk has error: #{$!.to_s})
+		
+		if content != ""
+		
+			options = { qualifier: ':', lang: 'tr_ch' }.merge options
+			begin
+				res = @plurkApi.post '/APP/Responses/responseAdd', options.merge(plurk_id: plurk_id, content: content)
+				p res
+				log %(#{Time.now.to_s} [EVENT] Responsing plurk: #{content})
+			rescue
+				log %(#{Time.now.to_s} [ERROR] Responsing plurk has error: #{$!.to_s})
+			end
 		end
 	end
 
@@ -177,11 +182,34 @@ class PhotoIso
 				return
 			end
 			
-			#read the EXIF info and put int the response string
-			resp << readEXIF
+			#read the EXIF info and put it in the response string
+			readEXIF =~ /([\S\s]+)##([\S\s]*)|(你的照片沒有EXIF資訊歐 OAO[\S\s]*)/
+			res1 = $1
+			res2 = $2
+			res3 = $3
+		
+			if res1 != nil
+				resp << res1 
+				p resp
+				responsePlurk(plurk["plurk_id"], resp * " ")
+			end
+			if res2 != nil
+				resp = []
+				resp << res2
+                                p resp
+				responsePlurk(plurk["plurk_id"], resp * " ")
+
+			end
+			if res3 != nil
+				resp = []
+				resp << res3
+				p resp
+                                responsePlurk(plurk["plurk_id"], resp * " ")				
+			end
+			
 		end
 		return if resp.empty?
-		responsePlurk(plurk["plurk_id"], resp * " ")
+		#responsePlurk(plurk["plurk_id"], resp * " ")
 		@plurkApi.post '/APP/Timeline/mutePlurks', ids: [[plurk["plurk_id"]]]
 	end
 
@@ -214,19 +242,12 @@ class PhotoIso
 				if @setting.time == "true"
 					s += "拍攝日期：#{a.date_time.to_s}\n" unless a.date_time.nil?
 				end
-				if @setting.GPS == "true"
-					s += "拍攝地點： " unless a.gps_longitude.nil? and a.gps_latitude.nil?
-					s += "#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f.round(4)} " unless a.gps_longitude.nil?
-					s += "#{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f.round(4)} \n" unless a.gps_latitude.nil?
-					s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s}#{a.gps_longitude.to_f}+#{a.gps_latitude_ref.to_s}#{a.gps_latitude.to_f} \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
-					s += "海拔#{a.gps_altitude.to_f.round(3)}公尺\n" unless a.gps_altitude.nil?
-				end
-				if @setting.exposure_time == "true"
-					s += "快門時間：#{( a.exif.exposure_time.to_r.rationalize(10**-8))}\n" unless a.exif.exposure_time.nil?
-				end
 				if @setting.size == "true"
 					s += "照片大小：#{a.width} * #{a.height}\n" unless a.width.nil? or a.height.nil?
 				end
+				if @setting.exposure_time == "true"
+                                        s += "快門時間：#{( a.exif.exposure_time.to_r.rationalize(10**-8))}\n" unless a.exif.exposure_time.nil?
+                                end
 				if @setting.f_number == "true"
 					s += "光圈大小：F #{a.exif.f_number.to_s}\n" unless a.exif.f_number.nil?
 				end
@@ -245,6 +266,16 @@ class PhotoIso
 					s += "#{a.exif.make.to_s} " unless a.exif.make.nil?
 					s += "#{a.exif.model.to_s}" unless a.exif.model.nil?
 				end
+
+				s += "##"
+				if @setting.GPS == "true"
+                                        s += "拍攝地點： " unless a.gps_longitude.nil? and a.gps_latitude.nil?
+                                        s += "#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f.round(4)} " unless a.gps_longitude.nil?
+                                        s += "#{a.gps_latitude_ref.to_s} #{a.gps_latitude.to_f.round(4)} \n" unless a.gps_latitude.nil?
+                                        #s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s}#{a.gps_longitude.to_f}+#{a.gps_latitude_ref.to_s}#{a.gps_latitude.to_f} \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
+                                        s += "海拔#{a.gps_altitude.to_f.round(3)}公尺\n" unless a.gps_altitude.nil?
+                                end
+
 			else
 				if @setting.size == "true"
 					s += "你的照片沒有EXIF資訊歐 OAO\n"
