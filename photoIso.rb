@@ -268,7 +268,7 @@ class PhotoIso
 					s += "#{a.exif.model.to_s}" unless a.exif.model.nil?
 				end
 
-				s += "##"
+				#s += "##"
 				if @setting.GPS == "true"
                                         s += "拍攝地點： " unless a.gps_longitude.nil? and a.gps_latitude.nil?
                                         s += "#{a.gps_longitude_ref.to_s} #{a.gps_longitude.to_f.round(4)} " unless a.gps_longitude.nil?
@@ -276,8 +276,11 @@ class PhotoIso
                                         #s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s}#{a.gps_longitude.to_f}+#{a.gps_latitude_ref.to_s}#{a.gps_latitude.to_f} \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
                                         s += "海拔#{a.gps_altitude.to_f.round(3)}公尺\n" unless a.gps_altitude.nil?
                                 end
-				#s += "##"
-
+				s += "##"
+				
+				if @setting.GPS == "true"
+					s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s}#{a.gps_longitude.to_f}+#{a.gps_latitude_ref.to_s}#{a.gps_latitude.to_f} \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
+				end
 			else
 				if @setting.size == "true"
 					s += "你的照片沒有EXIF資訊歐 OAO\n"
