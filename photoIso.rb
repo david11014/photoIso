@@ -101,9 +101,10 @@ class PhotoIso
 		
 			options = { qualifier: ':', lang: 'tr_ch' }.merge options
 			begin
-				res = @plurkApi.post '/APP/Responses/responseAdd', options.merge(plurk_id: plurk_id, content: content)
-				p res
 				log %(#{Time.now.to_s} [EVENT] Responsing plurk: #{content})
+				res = @plurkApi.post '/APP/Responses/responseAdd', options.merge(plurk_id: plurk_id, content: content)
+				
+				log %(#{Time.now.to_s} [EVENT] Responsing plurk response: #{res})
 			rescue
 				log %(#{Time.now.to_s} [ERROR] Responsing plurk has error: #{$!.to_s})
 			end
@@ -156,7 +157,7 @@ class PhotoIso
 		return unless responsed? plurk["plurk_id"]
 		resp = []
 		
-		case plurk["content"]
+		case plurk["content_raw"]
 		when /http[s]*:\/\/emos.plurk.com[\S]*.((jpg)|(jpeg))/
 			imageUrl = $&.to_s
 			log %(#{Time.now.to_s} [EVENT] New image: #{imageUrl} form #{plurk["plurk_id"].to_s})
@@ -275,6 +276,7 @@ class PhotoIso
                                         #s += "https://www.google.com/maps/place/#{a.gps_longitude_ref.to_s}#{a.gps_longitude.to_f}+#{a.gps_latitude_ref.to_s}#{a.gps_latitude.to_f} \n" unless a.gps_longitude.nil? and a.gps_latitude.nil?
                                         s += "海拔#{a.gps_altitude.to_f.round(3)}公尺\n" unless a.gps_altitude.nil?
                                 end
+				#s += "##"
 
 			else
 				if @setting.size == "true"
