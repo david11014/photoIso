@@ -30,3 +30,5 @@ Add the plurk "Please DON'T use chinese in Windows :)" </br>
  
  List the setting
  > set -l
+
+ >test
